@@ -62,19 +62,28 @@ export class Launcher {
     const monitorIndex = global.display.get_current_monitor();
     const monitor = global.display.get_monitor_geometry(monitorIndex);
 
-    // BinLayout centers its single child — this is what makes the card centered
+    // Full-stage overlay so clicks anywhere (including other monitors) dismiss it
     this._overlay = new St.Widget({
       style_class: 'glight-overlay',
-      layout_manager: new Clutter.BinLayout(),
+      layout_manager: new Clutter.FixedLayout(),
       reactive: true,
       can_focus: true,
+      x: 0,
+      y: 0,
+      width: global.stage.width,
+      height: global.stage.height,
+      opacity: 0,
+    });
+
+    // Non-reactive monitor-sized widget so BinLayout centers the card on the right display.
+    // Non-reactive means clicks in this area (but outside the card) fall through to the overlay.
+    const monitorArea = new St.Widget({
+      layout_manager: new Clutter.BinLayout(),
+      reactive: false,
       x: monitor.x,
       y: monitor.y,
       width: monitor.width,
       height: monitor.height,
-      x_expand: true,
-      y_expand: true,
-      opacity: 0,
     });
 
     // Dismiss on click outside the card
@@ -131,7 +140,8 @@ export class Launcher {
     scrollView.set_child(this._resultsList);
     container.add_child(this._searchEntry);
     container.add_child(scrollView);
-    this._overlay.add_child(container);
+    monitorArea.add_child(container);
+    this._overlay.add_child(monitorArea);
 
     Main.uiGroup.add_child(this._overlay);
 
@@ -191,6 +201,8 @@ export class Launcher {
     for (const app of apps) {
       this._resultsList.add_child(this._createAppRow(app));
     }
+
+    this._focusFirstResult();
   }
 
   private _getFilteredApps(query: string, limit: number): Gio.AppInfo[] {
@@ -275,6 +287,17 @@ export class Launcher {
       }
       if (key === Clutter.KEY_Escape) {
         this.hide();
+        return Clutter.EVENT_STOP;
+      }
+      if (key === Clutter.KEY_Down) {
+        const next = row.get_next_sibling() as St.Widget | null;
+        if (next) next.grab_key_focus();
+        return Clutter.EVENT_STOP;
+      }
+      if (key === Clutter.KEY_Up) {
+        const prev = row.get_previous_sibling() as St.Widget | null;
+        if (prev) prev.grab_key_focus();
+        else this._searchEntry?.grab_key_focus();
         return Clutter.EVENT_STOP;
       }
       return Clutter.EVENT_PROPAGATE;
