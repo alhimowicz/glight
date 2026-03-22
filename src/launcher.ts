@@ -118,7 +118,7 @@ export class Launcher {
     );
 
     const container = new St.BoxLayout({
-      style_class: 'popup-menu-content glight-container',
+      style_class: 'glight-container',
       vertical: true,
       x_align: Clutter.ActorAlign.CENTER,
       y_align: Clutter.ActorAlign.CENTER,
@@ -240,7 +240,7 @@ export class Launcher {
 
   private _createAppRow(appInfo: Gio.AppInfo): St.BoxLayout {
     const row = new St.BoxLayout({
-      style_class: 'popup-menu-item glight-result-row',
+      style_class: 'glight-result-row',
       reactive: true,
       can_focus: true,
       x_expand: true,

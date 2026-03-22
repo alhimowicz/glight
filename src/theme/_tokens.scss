@@ -57,12 +57,19 @@ $light-3: #deddda;
 $light-4: #c0bfbc;
 $light-5: #9a9996;
 
-// Dark
+// Dark (GNOME HIG — purple-tinted, used in light theme chrome)
 $dark-1: #77767b;
 $dark-2: #5e5c64;
 $dark-3: #3d3846;
 $dark-4: #241f31;
 $dark-5: #000000;
+
+// Neutral grays — Adwaita dark surfaces (GNOME Settings / system dialogs)
+$neutral-1: #f0f0f0;  // primary text on dark
+$neutral-2: #3d3d3d;  // hover row
+$neutral-3: #2d2d2d;  // card / surface
+$neutral-4: #1e1e1e;  // entry background
+$neutral-5: #141414;  // deepest bg
 
 // ── Theme maps ─────────────────────────────────────────────────────────────────
 // Each map holds all colour tokens for one appearance mode.
@@ -95,26 +102,26 @@ $theme-light: (
 
 $theme-dark: (
   // Backdrop
-  'backdrop':                rgba($dark-5, 0.55),
+  'backdrop':                rgba($dark-5, 0.50),
 
-  // Card surface — dark shell panel colour
-  'surface-bg':              $dark-3,
-  'surface-border':          $dark-2,
+  // Card surface — neutral Adwaita dark (matches GNOME Settings)
+  'surface-bg':              $neutral-3,
+  'surface-border':          rgba(#ffffff, 0.10),
 
   // Search input — deeper inset
-  'input-bg':                $dark-4,
-  'input-border':            $dark-2,
+  'input-bg':                $neutral-4,
+  'input-border':            rgba(#ffffff, 0.10),
   'input-border-focus':      $blue-3,
   'input-selection-bg':      $blue-3,
 
   // Text
-  'text-primary':            $light-2,
+  'text-primary':            $neutral-1,
   'text-secondary':          $light-5,
   'text-on-accent':          $light-1,
-  'text-on-accent-secondary': $light-3,
+  'text-on-accent-secondary': rgba(#ffffff, 0.75),
 
   // Rows
-  'row-hover':               $dark-2,
+  'row-hover':               rgba(#ffffff, 0.07),
   'row-focus':               $blue-3,
 );
 
