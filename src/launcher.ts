@@ -1,6 +1,7 @@
 import St from 'gi://St';
 import Clutter from 'gi://Clutter';
 import Gio from 'gi://Gio';
+import Shell from 'gi://Shell';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import { GlightSettings } from './settings.js';
 
@@ -281,14 +282,7 @@ export class Launcher {
     row.add_child(icon);
     row.add_child(labelBox);
 
-    const launch = () => {
-      try {
-        appInfo.launch([], null);
-        this.hide();
-      } catch (e) {
-        logError(e instanceof Error ? e : new Error(String(e)), `GLight: failed to launch ${appInfo.get_name()}`);
-      }
-    };
+    const launch = () => this._launchApp(appInfo);
 
     row.connect('button-press-event', () => {
       launch();
@@ -352,12 +346,20 @@ export class Launcher {
 
   private _launchFirstResult(): void {
     const app = this._currentApps[0];
-    if (!app) return;
+    if (app) this._launchApp(app);
+  }
+
+  private _launchApp(appInfo: Gio.AppInfo): void {
     try {
-      app.launch([], null);
+      const shellApp = Shell.AppSystem.get_default().lookup_app(appInfo.get_id() ?? '');
+      if (shellApp && shellApp.get_state() === Shell.AppState.RUNNING) {
+        shellApp.activate();
+      } else {
+        appInfo.launch([], null);
+      }
       this.hide();
     } catch (e) {
-      logError(e instanceof Error ? e : new Error(String(e)), `GLight: failed to launch ${app.get_name()}`);
+      logError(e instanceof Error ? e : new Error(String(e)), `GLight: failed to launch ${appInfo.get_name()}`);
     }
   }
 }
