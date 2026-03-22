@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.glight"
+          path="/org/gnome/shell/extensions/glight/">
+
+    <key name="toggle-shortcut" type="as">
+      <default>['&lt;Super&gt;Return']</default>
+      <summary>Toggle Launcher Shortcut</summary>
+      <description>Keyboard shortcut to toggle the GLight launcher</description>
+    </key>
+
+    <key name="max-results" type="i">
+      <default>10</default>
+      <range min="5" max="25"/>
+      <summary>Maximum Results</summary>
+      <description>Maximum number of search results to display</description>
+    </key>
+
+  </schema>
+</schemalist>

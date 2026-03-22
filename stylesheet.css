@@ -1,0 +1,63 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   GLight — GNOME Shell launcher stylesheet
+   Uses native GNOME Shell class names (popup-menu-content, popup-menu-item,
+   StEntry) for colors/borders/radii so the launcher matches the active shell
+   theme automatically.  Only structural overrides live here.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* Full-screen dimmed backdrop */
+.glight-overlay {
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+/* Floating card — popup-menu-content provides bg, border, border-radius, shadow.
+   We only override the fixed width. */
+.glight-container {
+  width: 640px;
+}
+
+/* Search entry — StEntry native styles apply automatically (bg, border-radius,
+   focus ring, placeholder color). We only set a larger font and padding. */
+.glight-search-entry {
+  font-size: 1.1em;
+  padding: 11px 12px;
+  margin: 2px;
+}
+
+/* Scroll container for results */
+.glight-results-scroll {
+  max-height: 400px;
+}
+
+/* Results list — no extra padding; popup-menu-content already has 6px */
+.glight-results-list { }
+
+/* Individual result row — popup-menu-item provides padding, border-radius,
+   hover/focus/active colors. We just adjust icon spacing. */
+.glight-result-row {
+  spacing: 12px;
+}
+
+/* App icon */
+.glight-result-icon {
+  icon-size: 32px;
+}
+
+/* App name — bold weight on top of popup-menu-item's native color */
+.glight-result-name {
+  font-size: 1em;
+  font-weight: bold;
+}
+
+/* App description — native secondary text sizing and subdued color */
+.glight-result-description {
+  font-size: 0.818em;
+  color: st-transparentize(#ffffff, 0.5);
+}
+
+/* Empty state */
+.glight-no-results {
+  padding: 20px;
+  font-size: 0.818em;
+  color: st-transparentize(#ffffff, 0.5);
+}

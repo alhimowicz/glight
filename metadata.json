@@ -1,0 +1,9 @@
+{
+  "name": "GLight",
+  "description": "A Spotlight/Raycast-like launcher for GNOME Shell",
+  "uuid": "glight@glight.dev",
+  "version": 1,
+  "shell-version": ["45", "46", "47", "48", "49"],
+  "settings-schema": "org.gnome.shell.extensions.glight",
+  "url": "https://github.com/dalhimowicz/glight"
+}

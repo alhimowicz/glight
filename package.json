@@ -1,0 +1,29 @@
+{
+  "name": "glight",
+  "version": "0.1.0",
+  "description": "A Spotlight/Raycast-like launcher for GNOME Shell",
+  "license": "GPL-2.0-or-later",
+  "type": "module",
+  "scripts": {
+    "build": "node build.js",
+    "dev": "node build.js && make install",
+    "clean": "rm -rf dist",
+    "pack": "make pack",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "esbuild": "^0.25.0",
+    "@girs/gjs": "*",
+    "@girs/gobject-2.0": "*",
+    "@girs/gio-2.0": "*",
+    "@girs/glib-2.0": "*",
+    "@girs/st-14": "*",
+    "@girs/clutter-14": "*",
+    "@girs/meta-14": "*",
+    "@girs/shell-0.1": "*",
+    "@girs/gtk-4.0": "*",
+    "@girs/adw-1": "*",
+    "@girs/pango-1.0": "*"
+  }
+}
