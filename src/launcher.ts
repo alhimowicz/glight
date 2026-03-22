@@ -59,16 +59,19 @@ export class Launcher {
   }
 
   private _buildUI(): void {
+    const monitorIndex = global.display.get_current_monitor();
+    const monitor = global.display.get_monitor_geometry(monitorIndex);
+
     // BinLayout centers its single child — this is what makes the card centered
     this._overlay = new St.Widget({
       style_class: 'glight-overlay',
       layout_manager: new Clutter.BinLayout(),
       reactive: true,
       can_focus: true,
-      x: 0,
-      y: 0,
-      width: global.stage.width,
-      height: global.stage.height,
+      x: monitor.x,
+      y: monitor.y,
+      width: monitor.width,
+      height: monitor.height,
       x_expand: true,
       y_expand: true,
       opacity: 0,
