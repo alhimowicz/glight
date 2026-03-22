@@ -1,7 +1,7 @@
 import Adw from 'gi://Adw';
 import Gtk from 'gi://Gtk';
 import { ExtensionPreferences } from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
-import { SETTINGS_KEY_MAX_RESULTS, SETTINGS_KEY_SHORTCUT } from './settings.js';
+import { SETTINGS_KEY_MAX_RESULTS, SETTINGS_KEY_SHORTCUT, SETTINGS_KEY_LAUNCHER_VISIBLE } from './settings.js';
 
 export default class GlightPreferences extends ExtensionPreferences {
   fillPreferencesWindow(window: Adw.PreferencesWindow): void {
@@ -9,6 +9,47 @@ export default class GlightPreferences extends ExtensionPreferences {
 
     window.set_title('GLight Settings');
     window.set_default_size(600, 400);
+
+    // ── Launcher toggle page ───────────────────────────────────────────────────
+    const launcherPage = new Adw.PreferencesPage({
+      title: 'Launcher',
+      icon_name: 'system-search-symbolic',
+    });
+    window.add(launcherPage);
+
+    const toggleGroup = new Adw.PreferencesGroup({
+      title: 'Preview',
+      description: 'Open the launcher directly from this window',
+    });
+    launcherPage.add(toggleGroup);
+
+    const toggleRow = new Adw.ActionRow({
+      title: 'Toggle Launcher',
+      subtitle: 'Show or hide the GLight launcher',
+    });
+
+    const toggleBtn = new Gtk.Button({
+      label: 'Toggle',
+      valign: Gtk.Align.CENTER,
+    });
+    (toggleBtn as unknown as { add_css_class(cls: string): void }).add_css_class('suggested-action');
+    (toggleBtn as unknown as { add_css_class(cls: string): void }).add_css_class('pill');
+
+    toggleBtn.connect('clicked', () => {
+      const current = settings.get_boolean(SETTINGS_KEY_LAUNCHER_VISIBLE);
+      settings.set_boolean(SETTINGS_KEY_LAUNCHER_VISIBLE, !current);
+    });
+
+    settings.connect(`changed::${SETTINGS_KEY_LAUNCHER_VISIBLE}`, () => {
+      const visible = settings.get_boolean(SETTINGS_KEY_LAUNCHER_VISIBLE);
+      toggleBtn.set_label(visible ? 'Hide' : 'Show');
+    });
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    toggleRow.add_suffix(toggleBtn as any);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    toggleRow.set_activatable_widget(toggleBtn as any);
+    toggleGroup.add(toggleRow);
 
     // ── Keyboard page ─────────────────────────────────────────────────────────
     const keyboardPage = new Adw.PreferencesPage({

@@ -9,6 +9,12 @@
       <description>Keyboard shortcut to toggle the GLight launcher</description>
     </key>
 
+    <key name="launcher-visible" type="b">
+      <default>false</default>
+      <summary>Launcher Visible</summary>
+      <description>Used by the preferences window to toggle the launcher</description>
+    </key>
+
     <key name="max-results" type="i">
       <default>10</default>
       <range min="5" max="25"/>

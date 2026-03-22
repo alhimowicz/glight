@@ -33,6 +33,7 @@ export class Launcher {
     this._overlay = null;
     this._resultsList = null;
     this._searchEntry = null;
+    this._settings.launcherVisible = false;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     Main.popModal(overlay as any);

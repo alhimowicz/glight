@@ -2,6 +2,7 @@ import Gio from 'gi://Gio';
 
 export const SETTINGS_KEY_SHORTCUT = 'toggle-shortcut';
 export const SETTINGS_KEY_MAX_RESULTS = 'max-results';
+export const SETTINGS_KEY_LAUNCHER_VISIBLE = 'launcher-visible';
 
 /**
  * Thin wrapper around Gio.Settings to provide typed access
@@ -20,6 +21,14 @@ export class GlightSettings {
 
   get maxResults(): number {
     return this._settings.get_int(SETTINGS_KEY_MAX_RESULTS);
+  }
+
+  get launcherVisible(): boolean {
+    return this._settings.get_boolean(SETTINGS_KEY_LAUNCHER_VISIBLE);
+  }
+
+  set launcherVisible(value: boolean) {
+    this._settings.set_boolean(SETTINGS_KEY_LAUNCHER_VISIBLE, value);
   }
 
   connectChanged(key: string, callback: () => void): number {
