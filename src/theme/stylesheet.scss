@@ -1,87 +1,98 @@
 // ── GLight launcher stylesheet ─────────────────────────────────────────────────
+@use 'sass:map';
 @use 'tokens' as *;
 
-// Dim backdrop covering the full stage
-.glight-overlay {
-  background-color: $color-backdrop;
-}
+// Output all colour-dependent rules scoped under a theme class applied to the
+// overlay. TypeScript reads org.gnome.desktop.interface color-scheme and adds
+// either .glight-light or .glight-dark to the overlay at show() time.
+@mixin theme($t) {
+  background-color: map.get($t, 'backdrop');
 
-// Floating card
-.glight-container {
-  width: $size-card-width;
-  background-color: $color-surface-bg;
-  border: 1px solid $color-surface-border;
-  border-radius: $radius-surface;
-  padding: $space-surface;
-}
+  .glight-container {
+    background-color: map.get($t, 'surface-bg');
+    border-color:     map.get($t, 'surface-border');
+  }
 
-// Search entry
-.glight-search-entry {
-  font-size: $size-input-font;
-  padding: 11px 12px;
-  margin: 2px 2px 8px 2px;
-  background-color: $color-input-bg;
-  border: 1px solid $color-input-border;
-  border-radius: $radius-input;
-  color: $color-text-primary;
-  selection-background-color: $color-input-selection-bg;
+  .glight-search-entry {
+    background-color:          map.get($t, 'input-bg');
+    border-color:              map.get($t, 'input-border');
+    color:                     map.get($t, 'text-primary');
+    selection-background-color: map.get($t, 'input-selection-bg');
 
-  &:focus {
-    border-color: $color-input-border-focus;
+    &:focus {
+      border-color: map.get($t, 'input-border-focus');
+    }
+  }
+
+  .glight-result-row {
+    color: map.get($t, 'text-primary');
+
+    &:hover { background-color: map.get($t, 'row-hover'); }
+    &:focus  { background-color: map.get($t, 'row-focus');
+               color:            map.get($t, 'text-on-accent'); }
+  }
+
+  .glight-result-name {
+    color: map.get($t, 'text-primary');
+
+    .glight-result-row:focus & { color: map.get($t, 'text-on-accent'); }
+  }
+
+  .glight-result-description {
+    color: map.get($t, 'text-secondary');
+
+    .glight-result-row:focus & { color: map.get($t, 'text-on-accent-secondary'); }
+  }
+
+  .glight-no-results {
+    color: map.get($t, 'text-secondary');
   }
 }
 
-// Scroll container for results
+// ── Theme variants ─────────────────────────────────────────────────────────────
+.glight-overlay.glight-light { @include theme($theme-light); }
+.glight-overlay.glight-dark  { @include theme($theme-dark);  }
+
+// ── Theme-independent structure ────────────────────────────────────────────────
+.glight-container {
+  width:         $size-card-width;
+  border:        1px solid;        // colour set by theme mixin above
+  border-radius: $radius-surface;
+  padding:       $space-surface;
+}
+
+.glight-search-entry {
+  font-size:     $size-input-font;
+  padding:       11px 12px;
+  margin:        2px 2px 8px 2px;
+  border:        1px solid;        // colour set by theme mixin above
+  border-radius: $radius-input;
+}
+
 .glight-results-scroll {
   max-height: $size-results-max-height;
 }
 
-// Individual result row
 .glight-result-row {
-  spacing: $space-row-icon;
+  spacing:       $space-row-icon;
   border-radius: $radius-row;
-  padding: 8px 12px;
-  color: $color-text-primary;
-
-  &:hover {
-    background-color: $color-row-hover;
-  }
-
-  &:focus {
-    background-color: $color-row-focus;
-    color: $color-text-on-accent;
-  }
+  padding:       8px 12px;
 }
 
-// App icon
 .glight-result-icon {
   icon-size: $size-icon;
 }
 
-// App name
 .glight-result-name {
-  font-size: $size-row-font;
+  font-size:   $size-row-font;
   font-weight: bold;
-  color: $color-text-primary;
-
-  .glight-result-row:focus & {
-    color: $color-text-on-accent;
-  }
 }
 
-// App description
 .glight-result-description {
   font-size: $size-desc-font;
-  color: $color-text-secondary;
-
-  .glight-result-row:focus & {
-    color: $color-text-on-accent-secondary;
-  }
 }
 
-// Empty state
 .glight-no-results {
-  padding: 20px;
+  padding:   20px;
   font-size: $size-desc-font;
-  color: $color-text-secondary;
 }

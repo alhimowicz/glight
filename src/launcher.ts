@@ -11,6 +11,7 @@ export class Launcher {
   private _searchEntry: St.Entry | null = null;
   private _isVisible = false;
   private _isAnimating = false;
+  private _currentApps: Gio.AppInfo[] = [];
 
   constructor(settings: GlightSettings) {
     this._settings = settings;
@@ -58,13 +59,22 @@ export class Launcher {
     this._isVisible = false;
   }
 
+  private _themeClass(): string {
+    try {
+      const settings = new Gio.Settings({ schema: 'org.gnome.desktop.interface' });
+      return settings.get_string('color-scheme') === 'prefer-dark' ? 'glight-dark' : 'glight-light';
+    } catch {
+      return 'glight-light';
+    }
+  }
+
   private _buildUI(): void {
     const monitorIndex = global.display.get_current_monitor();
     const monitor = global.display.get_monitor_geometry(monitorIndex);
 
     // Full-stage overlay so clicks anywhere (including other monitors) dismiss it
     this._overlay = new St.Widget({
-      style_class: 'glight-overlay',
+      style_class: `glight-overlay ${this._themeClass()}`,
       layout_manager: new Clutter.FixedLayout(),
       reactive: true,
       can_focus: true,
@@ -171,6 +181,10 @@ export class Launcher {
           this.hide();
           return Clutter.EVENT_STOP;
         }
+        if (key === Clutter.KEY_Return || key === Clutter.KEY_KP_Enter) {
+          this._launchFirstResult();
+          return Clutter.EVENT_STOP;
+        }
         if (key === Clutter.KEY_Down || key === Clutter.KEY_Tab) {
           this._focusFirstResult();
           return Clutter.EVENT_STOP;
@@ -183,9 +197,11 @@ export class Launcher {
   private _populateResults(query: string): void {
     if (!this._resultsList) return;
     this._resultsList.destroy_all_children();
+    this._currentApps = [];
     if (query.length === 0) return;
 
     const apps = this._getFilteredApps(query, this._settings.maxResults);
+    this._currentApps = apps;
 
     if (apps.length === 0 && query.length > 0) {
       const empty = new St.Label({
@@ -201,8 +217,6 @@ export class Launcher {
     for (const app of apps) {
       this._resultsList.add_child(this._createAppRow(app));
     }
-
-    this._focusFirstResult();
   }
 
   private _getFilteredApps(query: string, limit: number): Gio.AppInfo[] {
@@ -309,5 +323,16 @@ export class Launcher {
   private _focusFirstResult(): void {
     const first = this._resultsList?.get_first_child() as St.Widget | null;
     first?.grab_key_focus();
+  }
+
+  private _launchFirstResult(): void {
+    const app = this._currentApps[0];
+    if (!app) return;
+    try {
+      app.launch([], null);
+      this.hide();
+    } catch (e) {
+      logError(e instanceof Error ? e : new Error(String(e)), `GLight: failed to launch ${app.get_name()}`);
+    }
   }
 }

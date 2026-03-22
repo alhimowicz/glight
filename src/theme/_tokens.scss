@@ -64,42 +64,69 @@ $dark-3: #3d3846;
 $dark-4: #241f31;
 $dark-5: #000000;
 
-// ── Semantic tokens ────────────────────────────────────────────────────────────
-// Modelled after GNOME Settings (Adwaita light): neutral surfaces, dark text,
-// blue accent only for the focused/selected state.
+// ── Theme maps ─────────────────────────────────────────────────────────────────
+// Each map holds all colour tokens for one appearance mode.
+// Structural tokens (radii, sizes, spacing) are plain variables below.
 
-// Backdrop — subtle dim, not a dark modal sheet
-$color-backdrop: rgba($dark-5, 0.30);
+$theme-light: (
+  // Backdrop
+  'backdrop':                rgba($dark-5, 0.30),
 
-// Card surface — matches Adwaita window background
-$color-surface-bg:     $light-2;   // #f6f5f4
-$color-surface-border: $light-4;   // #c0bfbc
-$radius-surface:       12px;
-$space-surface:        12px;
+  // Card surface — Adwaita window background
+  'surface-bg':              $light-2,
+  'surface-border':          $light-4,
 
-// Search input — white inset like an Adwaita entry
-$color-input-bg:           $light-1;   // #ffffff
-$color-input-border:       $light-4;   // #c0bfbc
-$color-input-border-focus: $blue-3;    // #3584e4
-$color-input-selection-bg: $blue-3;
+  // Search input — white inset
+  'input-bg':                $light-1,
+  'input-border':            $light-4,
+  'input-border-focus':      $blue-3,
+  'input-selection-bg':      $blue-3,
+
+  // Text
+  'text-primary':            $dark-4,
+  'text-secondary':          $dark-1,
+  'text-on-accent':          $light-1,
+  'text-on-accent-secondary': $light-3,
+
+  // Rows
+  'row-hover':               $light-3,
+  'row-focus':               $blue-3,
+);
+
+$theme-dark: (
+  // Backdrop
+  'backdrop':                rgba($dark-5, 0.55),
+
+  // Card surface — dark shell panel colour
+  'surface-bg':              $dark-3,
+  'surface-border':          $dark-2,
+
+  // Search input — deeper inset
+  'input-bg':                $dark-4,
+  'input-border':            $dark-2,
+  'input-border-focus':      $blue-3,
+  'input-selection-bg':      $blue-3,
+
+  // Text
+  'text-primary':            $light-2,
+  'text-secondary':          $light-5,
+  'text-on-accent':          $light-1,
+  'text-on-accent-secondary': $light-3,
+
+  // Rows
+  'row-hover':               $dark-2,
+  'row-focus':               $blue-3,
+);
+
+// ── Structural tokens (theme-independent) ──────────────────────────────────────
+$radius-surface:          12px;
+$space-surface:           12px;
 $radius-input:             8px;
 $size-input-font:          1.1em;
-
-// Text — dark on light, secondary is muted gray
-$color-text-primary:             $dark-4;   // #241f31
-$color-text-secondary:           $dark-1;   // #77767b
-$color-text-on-accent:           $light-1;  // #ffffff
-$color-text-on-accent-secondary: $light-3;  // #deddda
-
-// Result rows
-$color-row-hover: $light-3;   // #deddda — very subtle hover
-$color-row-focus: $blue-3;    // #3584e4 — blue only on selection
-$radius-row:      8px;
-$size-row-font:   1em;
-$size-desc-font:  0.818em;
-
-// Layout
+$radius-row:               8px;
+$size-row-font:            1em;
+$size-desc-font:           0.818em;
 $size-card-width:         640px;
 $size-results-max-height: 400px;
-$size-icon:               32px;
-$space-row-icon:          12px;
+$size-icon:                32px;
+$space-row-icon:           12px;
