@@ -1,24 +1,41 @@
 /* ─────────────────────────────────────────────────────────────────────────────
    GLight — GNOME Shell launcher stylesheet
-   Uses native GNOME Shell class names (popup-menu-content, popup-menu-item,
-   StEntry) for colors/borders/radii so the launcher matches the active shell
-   theme automatically.  Only structural overrides live here.
+   Colors sourced from the official GNOME HIG palette:
+   https://developer.gnome.org/hig/reference/palette.html
+
+   Dark 1 #77767b  Dark 2 #5e5c64  Dark 3 #3d3846  Dark 4 #241f31  Dark 5 #000000
+   Light 1 #ffffff  Light 2 #f6f5f4  Light 3 #deddda  Light 4 #c0bfbc  Light 5 #9a9996
+   Blue 1 #99c1f1   Blue 2 #62a0ea   Blue 3 #3584e4   Blue 4 #1c71d8   Blue 5 #1a5fb4
    ───────────────────────────────────────────────────────────────────────────── */
 
-.glight-overlay { }
-
-/* Floating card — popup-menu-content provides bg, border, border-radius, shadow.
-   We only override the fixed width. */
-.glight-container {
-  width: 640px;
+/* Dim backdrop covering the full stage */
+.glight-overlay {
+  background-color: rgba(0, 0, 0, 0.55); /* Dark 5 at 55 % */
 }
 
-/* Search entry — StEntry native styles apply automatically (bg, border-radius,
-   focus ring, placeholder color). We only set a larger font and padding. */
+/* Floating card */
+.glight-container {
+  width: 640px;
+  background-color: #3d3846; /* Dark 3 */
+  border: 1px solid #5e5c64; /* Dark 2 */
+  border-radius: 12px;
+  padding: 12px;
+}
+
+/* Search entry */
 .glight-search-entry {
   font-size: 1.1em;
   padding: 11px 12px;
-  margin: 2px;
+  margin: 2px 2px 8px 2px;
+  background-color: #241f31; /* Dark 4 */
+  border: 1px solid #5e5c64; /* Dark 2 */
+  border-radius: 8px;
+  color: #f6f5f4; /* Light 2 */
+  selection-background-color: #3584e4; /* Blue 3 */
+}
+
+.glight-search-entry:focus {
+  border-color: #3584e4; /* Blue 3 */
 }
 
 /* Scroll container for results */
@@ -26,13 +43,21 @@
   max-height: 400px;
 }
 
-/* Results list — no extra padding; popup-menu-content already has 6px */
-.glight-results-list { }
-
-/* Individual result row — popup-menu-item provides padding, border-radius,
-   hover/focus/active colors. We just adjust icon spacing. */
+/* Individual result row */
 .glight-result-row {
   spacing: 12px;
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: #f6f5f4; /* Light 2 */
+}
+
+.glight-result-row:hover {
+  background-color: #5e5c64; /* Dark 2 */
+}
+
+.glight-result-row:focus {
+  background-color: #3584e4; /* Blue 3 */
+  color: #ffffff; /* Light 1 */
 }
 
 /* App icon */
@@ -40,21 +65,30 @@
   icon-size: 32px;
 }
 
-/* App name — bold weight on top of popup-menu-item's native color */
+/* App name */
 .glight-result-name {
   font-size: 1em;
   font-weight: bold;
+  color: #f6f5f4; /* Light 2 */
 }
 
-/* App description — native secondary text sizing and subdued color */
+.glight-result-row:focus .glight-result-name {
+  color: #ffffff; /* Light 1 — stay readable on Blue 3 */
+}
+
+/* App description */
 .glight-result-description {
   font-size: 0.818em;
-  color: st-transparentize(#ffffff, 0.5);
+  color: #9a9996; /* Light 5 */
+}
+
+.glight-result-row:focus .glight-result-description {
+  color: #deddda; /* Light 3 — readable on Blue 3 */
 }
 
 /* Empty state */
 .glight-no-results {
   padding: 20px;
   font-size: 0.818em;
-  color: st-transparentize(#ffffff, 0.5);
+  color: #9a9996; /* Light 5 */
 }

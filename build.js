@@ -1,6 +1,7 @@
 // @ts-check
 import esbuild from 'esbuild';
-import { mkdir, copyFile } from 'fs/promises';
+import sass from 'sass';
+import { mkdir, copyFile, writeFile } from 'fs/promises';
 
 // All modules provided by the GNOME Shell runtime — do NOT bundle them.
 const gnomeExternalPlugin = {
@@ -43,7 +44,12 @@ async function build() {
 
     // Copy static assets
     copyFile('./metadata.json', './dist/metadata.json'),
-    copyFile('./stylesheet.css', './dist/stylesheet.css'),
+
+    // Compile SCSS → stylesheet.css
+    (async () => {
+      const result = sass.compile('./src/theme/stylesheet.scss', { style: 'compressed' });
+      await writeFile('./dist/stylesheet.css', result.css);
+    })(),
   ]);
 
   console.log('✓ Build complete → dist/');

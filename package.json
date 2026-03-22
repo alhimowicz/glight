@@ -12,18 +12,19 @@
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "typescript": "^5.4.0",
-    "esbuild": "^0.25.0",
-    "@girs/gjs": "*",
-    "@girs/gobject-2.0": "*",
-    "@girs/gio-2.0": "*",
-    "@girs/glib-2.0": "*",
-    "@girs/st-14": "*",
-    "@girs/clutter-14": "*",
-    "@girs/meta-14": "*",
-    "@girs/shell-0.1": "*",
-    "@girs/gtk-4.0": "*",
     "@girs/adw-1": "*",
-    "@girs/pango-1.0": "*"
+    "@girs/clutter-14": "*",
+    "@girs/gio-2.0": "*",
+    "@girs/gjs": "*",
+    "@girs/glib-2.0": "*",
+    "@girs/gobject-2.0": "*",
+    "@girs/gtk-4.0": "*",
+    "@girs/meta-14": "*",
+    "@girs/pango-1.0": "*",
+    "@girs/shell-0.1": "*",
+    "@girs/st-14": "*",
+    "esbuild": "^0.25.0",
+    "sass": "^1.98.0",
+    "typescript": "^5.4.0"
   }
 }

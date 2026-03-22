@@ -1,0 +1,87 @@
+// ── GLight launcher stylesheet ─────────────────────────────────────────────────
+@use 'tokens' as *;
+
+// Dim backdrop covering the full stage
+.glight-overlay {
+  background-color: $color-backdrop;
+}
+
+// Floating card
+.glight-container {
+  width: $size-card-width;
+  background-color: $color-surface-bg;
+  border: 1px solid $color-surface-border;
+  border-radius: $radius-surface;
+  padding: $space-surface;
+}
+
+// Search entry
+.glight-search-entry {
+  font-size: $size-input-font;
+  padding: 11px 12px;
+  margin: 2px 2px 8px 2px;
+  background-color: $color-input-bg;
+  border: 1px solid $color-input-border;
+  border-radius: $radius-input;
+  color: $color-text-primary;
+  selection-background-color: $color-input-selection-bg;
+
+  &:focus {
+    border-color: $color-input-border-focus;
+  }
+}
+
+// Scroll container for results
+.glight-results-scroll {
+  max-height: $size-results-max-height;
+}
+
+// Individual result row
+.glight-result-row {
+  spacing: $space-row-icon;
+  border-radius: $radius-row;
+  padding: 8px 12px;
+  color: $color-text-primary;
+
+  &:hover {
+    background-color: $color-row-hover;
+  }
+
+  &:focus {
+    background-color: $color-row-focus;
+    color: $color-text-on-accent;
+  }
+}
+
+// App icon
+.glight-result-icon {
+  icon-size: $size-icon;
+}
+
+// App name
+.glight-result-name {
+  font-size: $size-row-font;
+  font-weight: bold;
+  color: $color-text-primary;
+
+  .glight-result-row:focus & {
+    color: $color-text-on-accent;
+  }
+}
+
+// App description
+.glight-result-description {
+  font-size: $size-desc-font;
+  color: $color-text-secondary;
+
+  .glight-result-row:focus & {
+    color: $color-text-on-accent-secondary;
+  }
+}
+
+// Empty state
+.glight-no-results {
+  padding: 20px;
+  font-size: $size-desc-font;
+  color: $color-text-secondary;
+}
