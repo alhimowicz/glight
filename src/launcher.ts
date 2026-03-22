@@ -100,15 +100,10 @@ export class Launcher {
     });
 
     // Dismiss on click outside the card
-    this._overlay.connect(
-      'button-press-event',
-      (_actor: Clutter.Actor, event: Clutter.Event) => {
-        if (event.get_source() === (this._overlay as unknown as Clutter.Actor)) {
-          this.hide();
-        }
-        return Clutter.EVENT_PROPAGATE;
-      }
-    );
+    this._overlay.connect('button-press-event', () => {
+      this.hide();
+      return Clutter.EVENT_STOP;
+    });
 
     // ESC to dismiss (catches events when overlay itself has focus)
     this._overlay.connect(
@@ -127,7 +122,10 @@ export class Launcher {
       vertical: true,
       x_align: Clutter.ActorAlign.CENTER,
       y_align: Clutter.ActorAlign.CENTER,
+      reactive: true,
     });
+
+    container.connect('button-press-event', () => Clutter.EVENT_STOP);
 
     this._searchEntry = new St.Entry({
       style_class: 'glight-search-entry',
