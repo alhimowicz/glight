@@ -66,10 +66,9 @@ $dark-5: #000000;
 
 // Neutral grays — Adwaita dark surfaces (GNOME Settings / system dialogs)
 $neutral-1: #f0f0f0;  // primary text on dark
-$neutral-2: #3d3d3d;  // hover row
+$neutral-2: #4a4a4a;  // focused row on dark
 $neutral-3: #2d2d2d;  // card / surface
 $neutral-4: #1e1e1e;  // entry background
-$neutral-5: #141414;  // deepest bg
 
 // ── Theme maps ─────────────────────────────────────────────────────────────────
 // Each map holds all colour tokens for one appearance mode.
@@ -92,12 +91,10 @@ $theme-light: (
   // Text
   'text-primary':            $dark-4,
   'text-secondary':          $dark-1,
-  'text-on-accent':          $light-1,
-  'text-on-accent-secondary': $light-3,
 
-  // Rows
-  'row-hover':               $light-3,
-  'row-focus':               $blue-3,
+  // Rows — alpha overlays match Adwaita list row behaviour
+  'row-hover':               rgba(#000000, 0.07),
+  'row-focus':               $light-3,
 );
 
 $theme-dark: (
@@ -117,12 +114,10 @@ $theme-dark: (
   // Text
   'text-primary':            $neutral-1,
   'text-secondary':          $light-5,
-  'text-on-accent':          $light-1,
-  'text-on-accent-secondary': rgba(#ffffff, 0.75),
 
-  // Rows
+  // Rows — alpha overlays match Adwaita list row behaviour
   'row-hover':               rgba(#ffffff, 0.07),
-  'row-focus':               $blue-3,
+  'row-focus':               $neutral-2,
 );
 
 // ── Structural tokens (theme-independent) ──────────────────────────────────────

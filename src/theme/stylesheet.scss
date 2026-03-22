@@ -29,19 +29,15 @@
 
     &:hover { background-color: map.get($t, 'row-hover'); }
     &:focus  { background-color: map.get($t, 'row-focus');
-               color:            map.get($t, 'text-on-accent'); }
+               border-left: 3px solid $blue-3; }
   }
 
   .glight-result-name {
     color: map.get($t, 'text-primary');
-
-    .glight-result-row:focus & { color: map.get($t, 'text-on-accent'); }
   }
 
   .glight-result-description {
     color: map.get($t, 'text-secondary');
-
-    .glight-result-row:focus & { color: map.get($t, 'text-on-accent-secondary'); }
   }
 
   .glight-no-results {
