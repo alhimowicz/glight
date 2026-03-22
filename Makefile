@@ -2,7 +2,7 @@ UUID        = glight@glight.dev
 SCHEMA_ID   = org.gnome.shell.extensions.glight
 INSTALL_DIR = $(HOME)/.local/share/gnome-shell/extensions/$(UUID)
 
-.PHONY: all build install uninstall schemas clean pack dev enable disable reload
+.PHONY: all build install uninstall schemas clean pack dev dev-reload enable disable reload
 
 all: build
 
@@ -35,6 +35,11 @@ pack: build schemas
 
 dev: install
 	gnome-extensions enable $(UUID) 2>/dev/null || true
+
+dev-reload: install
+	gnome-extensions disable $(UUID) 2>/dev/null || true
+	gnome-extensions enable $(UUID) 2>/dev/null || true
+	@echo "✓ Extension reloaded (no logout needed)"
 
 enable:
 	gnome-extensions enable $(UUID)

@@ -35,8 +35,6 @@ export class Launcher {
     this._searchEntry = null;
     this._settings.launcherVisible = false;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    Main.popModal(overlay as any);
     this._isAnimating = true;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (overlay as any).ease({
@@ -53,8 +51,6 @@ export class Launcher {
 
   destroy(): void {
     if (this._overlay) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      Main.popModal(this._overlay as any);
       Main.uiGroup.remove_child(this._overlay);
       this._overlay.destroy();
       this._overlay = null;
@@ -63,14 +59,18 @@ export class Launcher {
   }
 
   private _buildUI(): void {
+    // BinLayout centers its single child — this is what makes the card centered
     this._overlay = new St.Widget({
       style_class: 'glight-overlay',
+      layout_manager: new Clutter.BinLayout(),
       reactive: true,
       can_focus: true,
       x: 0,
       y: 0,
       width: global.stage.width,
       height: global.stage.height,
+      x_expand: true,
+      y_expand: true,
       opacity: 0,
     });
 
@@ -85,14 +85,11 @@ export class Launcher {
       }
     );
 
-    // ESC or Super+Return to dismiss
+    // ESC to dismiss (catches events when overlay itself has focus)
     this._overlay.connect(
       'key-press-event',
       (_actor: Clutter.Actor, event: Clutter.Event) => {
-        const key = event.get_key_symbol();
-        const mods = event.get_state();
-        if (key === Clutter.KEY_Escape ||
-            (key === Clutter.KEY_Return && (mods & Clutter.ModifierType.SUPER_MASK))) {
+        if (event.get_key_symbol() === Clutter.KEY_Escape) {
           this.hide();
           return Clutter.EVENT_STOP;
         }
@@ -100,7 +97,6 @@ export class Launcher {
       }
     );
 
-    // Centered card
     const container = new St.BoxLayout({
       style_class: 'popup-menu-content glight-container',
       vertical: true,
@@ -144,8 +140,6 @@ export class Launcher {
       mode: Clutter.AnimationMode.EASE_OUT_QUAD,
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    Main.pushModal(this._overlay as any);
     this._searchEntry.grab_key_focus();
     this._populateResults('');
 
@@ -155,7 +149,7 @@ export class Launcher {
       this._populateResults(query);
     });
 
-    // Arrow-down / Tab → focus first result
+    // ESC → close; Down/Tab → focus first result
     this._searchEntry.clutter_text.connect(
       'key-press-event',
       (_actor: Clutter.Actor, event: Clutter.Event) => {
