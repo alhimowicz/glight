@@ -159,6 +159,10 @@ export class Launcher {
       'key-press-event',
       (_actor: Clutter.Actor, event: Clutter.Event) => {
         const key = event.get_key_symbol();
+        if (key === Clutter.KEY_Escape) {
+          this.hide();
+          return Clutter.EVENT_STOP;
+        }
         if (key === Clutter.KEY_Down || key === Clutter.KEY_Tab) {
           this._focusFirstResult();
           return Clutter.EVENT_STOP;
@@ -269,6 +273,10 @@ export class Launcher {
       const key = event.get_key_symbol();
       if (key === Clutter.KEY_Return || key === Clutter.KEY_KP_Enter) {
         launch();
+        return Clutter.EVENT_STOP;
+      }
+      if (key === Clutter.KEY_Escape) {
+        this.hide();
         return Clutter.EVENT_STOP;
       }
       return Clutter.EVENT_PROPAGATE;

@@ -2,7 +2,7 @@ UUID        = glight@glight.dev
 SCHEMA_ID   = org.gnome.shell.extensions.glight
 INSTALL_DIR = $(HOME)/.local/share/gnome-shell/extensions/$(UUID)
 
-.PHONY: all build install uninstall schemas clean pack dev
+.PHONY: all build install uninstall schemas clean pack dev enable disable reload
 
 all: build
 
@@ -35,6 +35,14 @@ pack: build schemas
 
 dev: install
 	gnome-extensions enable $(UUID) 2>/dev/null || true
+
+enable:
+	gnome-extensions enable $(UUID)
+
+disable:
+	gnome-extensions disable $(UUID)
+
+reload: disable enable
 
 clean:
 	rm -rf dist releases

@@ -5,10 +5,7 @@
    theme automatically.  Only structural overrides live here.
    ───────────────────────────────────────────────────────────────────────────── */
 
-/* Full-screen dimmed backdrop */
-.glight-overlay {
-  background-color: rgba(0, 0, 0, 0.4);
-}
+.glight-overlay { }
 
 /* Floating card — popup-menu-content provides bg, border, border-radius, shadow.
    We only override the fixed width. */
