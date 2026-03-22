@@ -9,6 +9,7 @@ export class Launcher {
   private _overlay: St.Widget | null = null;
   private _resultsList: St.BoxLayout | null = null;
   private _searchEntry: St.Entry | null = null;
+  private _scrollView: St.ScrollView | null = null;
   private _isVisible = false;
   private _isAnimating = false;
   private _currentApps: Gio.AppInfo[] = [];
@@ -34,6 +35,7 @@ export class Launcher {
     this._overlay = null;
     this._resultsList = null;
     this._searchEntry = null;
+    this._scrollView = null;
     this._settings.launcherVisible = false;
 
     this._isAnimating = true;
@@ -133,7 +135,7 @@ export class Launcher {
       x_expand: true,
     });
 
-    const scrollView = new St.ScrollView({
+    this._scrollView = new St.ScrollView({
       style_class: 'glight-results-scroll',
       x_expand: true,
       y_expand: true,
@@ -147,9 +149,9 @@ export class Launcher {
       x_expand: true,
     });
 
-    scrollView.set_child(this._resultsList);
+    this._scrollView.set_child(this._resultsList);
     container.add_child(this._searchEntry);
-    container.add_child(scrollView);
+    container.add_child(this._scrollView);
     monitorArea.add_child(container);
     this._overlay.add_child(monitorArea);
 
@@ -304,14 +306,21 @@ export class Launcher {
         return Clutter.EVENT_STOP;
       }
       if (key === Clutter.KEY_Down) {
-        const next = row.get_next_sibling() as St.Widget | null;
-        if (next) next.grab_key_focus();
+        const next = row.get_next_sibling() as St.BoxLayout | null;
+        if (next) {
+          next.grab_key_focus();
+          this._ensureVisible(next);
+        }
         return Clutter.EVENT_STOP;
       }
       if (key === Clutter.KEY_Up) {
-        const prev = row.get_previous_sibling() as St.Widget | null;
-        if (prev) prev.grab_key_focus();
-        else this._searchEntry?.grab_key_focus();
+        const prev = row.get_previous_sibling() as St.BoxLayout | null;
+        if (prev) {
+          prev.grab_key_focus();
+          this._ensureVisible(prev);
+        } else {
+          this._searchEntry?.grab_key_focus();
+        }
         return Clutter.EVENT_STOP;
       }
       return Clutter.EVENT_PROPAGATE;
@@ -323,6 +332,22 @@ export class Launcher {
   private _focusFirstResult(): void {
     const first = this._resultsList?.get_first_child() as St.Widget | null;
     first?.grab_key_focus();
+  }
+
+  private _ensureVisible(row: St.BoxLayout): void {
+    if (!this._scrollView) return;
+    const adjustment = this._scrollView.vadjustment;
+    const [, rowY] = row.get_transformed_position();
+    const [, scrollY] = this._scrollView.get_transformed_position();
+    const relY = rowY - scrollY;
+    const rowH = row.height;
+    const viewH = this._scrollView.height;
+
+    if (relY < 0) {
+      adjustment.value += relY;
+    } else if (relY + rowH > viewH) {
+      adjustment.value += relY + rowH - viewH;
+    }
   }
 
   private _launchFirstResult(): void {
