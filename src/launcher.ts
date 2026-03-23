@@ -168,6 +168,29 @@ export class Launcher {
       }
     );
 
+    // Redirect printable keystrokes back to the search entry when a result row has focus
+    this._overlay.connect(
+      'captured-event',
+      (_actor: Clutter.Actor, event: Clutter.Event) => {
+        if (event.type() !== Clutter.EventType.KEY_PRESS) return Clutter.EVENT_PROPAGATE;
+        if (!this._searchEntry || this._searchEntry.clutter_text.has_key_focus()) return Clutter.EVENT_PROPAGATE;
+
+        const key = event.get_key_symbol();
+        if (key === Clutter.KEY_Escape || key === Clutter.KEY_Return || key === Clutter.KEY_KP_Enter ||
+            key === Clutter.KEY_Up || key === Clutter.KEY_Down || key === Clutter.KEY_Tab) {
+          return Clutter.EVENT_PROPAGATE;
+        }
+
+        const unicode = event.get_key_unicode();
+        if (unicode && unicode.trim().length > 0) {
+          this._searchEntry.grab_key_focus();
+          return Clutter.EVENT_PROPAGATE;
+        }
+
+        return Clutter.EVENT_PROPAGATE;
+      }
+    );
+
     const cardWidth = 640; // matches $size-card-width CSS token
     const container = new St.BoxLayout({
       style_class: 'glight-container',
