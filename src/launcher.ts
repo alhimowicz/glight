@@ -1,9 +1,19 @@
 import St from 'gi://St';
 import Clutter from 'gi://Clutter';
 import Gio from 'gi://Gio';
+import GLib from 'gi://GLib';
 import Shell from 'gi://Shell';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import { GlightSettings } from './settings.js';
+
+interface SystemAction {
+  name: string;
+  iconName: string;
+  keywords: string[];
+  execute: () => void;
+}
+
+type ResultItem = { kind: 'action'; action: SystemAction } | { kind: 'app'; info: Gio.AppInfo };
 
 export class Launcher {
   private _settings: GlightSettings;
@@ -13,7 +23,50 @@ export class Launcher {
   private _scrollView: St.ScrollView | null = null;
   private _isVisible = false;
   private _isAnimating = false;
-  private _currentApps: Gio.AppInfo[] = [];
+  private _currentResults: ResultItem[] = [];
+
+  private readonly _systemActions: SystemAction[] = [
+    {
+      name: 'Lock Screen',
+      iconName: 'system-lock-screen-symbolic',
+      keywords: ['lock', 'lock screen'],
+      execute: () => Gio.DBus.session.call(
+        'org.gnome.ScreenSaver', '/org/gnome/ScreenSaver',
+        'org.gnome.ScreenSaver', 'Lock',
+        null, null, Gio.DBusCallFlags.NONE, -1, null, null
+      ),
+    },
+    {
+      name: 'Power Off',
+      iconName: 'system-shutdown-symbolic',
+      keywords: ['power off', 'shutdown', 'shut down', 'poweroff', 'power'],
+      execute: () => Gio.DBus.session.call(
+        'org.gnome.SessionManager', '/org/gnome/SessionManager',
+        'org.gnome.SessionManager', 'Shutdown',
+        null, null, Gio.DBusCallFlags.NONE, -1, null, null
+      ),
+    },
+    {
+      name: 'Restart',
+      iconName: 'system-restart-symbolic',
+      keywords: ['restart', 'reboot'],
+      execute: () => Gio.DBus.session.call(
+        'org.gnome.SessionManager', '/org/gnome/SessionManager',
+        'org.gnome.SessionManager', 'Reboot',
+        null, null, Gio.DBusCallFlags.NONE, -1, null, null
+      ),
+    },
+    {
+      name: 'Log Out',
+      iconName: 'system-log-out-symbolic',
+      keywords: ['log out', 'logout', 'sign out', 'signout'],
+      execute: () => Gio.DBus.session.call(
+        'org.gnome.SessionManager', '/org/gnome/SessionManager',
+        'org.gnome.SessionManager', 'Logout',
+        new GLib.Variant('(u)', [0]), null, Gio.DBusCallFlags.NONE, -1, null, null
+      ),
+    },
+  ];
 
   constructor(settings: GlightSettings) {
     this._settings = settings;
@@ -72,13 +125,16 @@ export class Launcher {
   }
 
   private _buildUI(): void {
-    const monitorIndex = global.display.get_current_monitor();
-    const monitor = global.display.get_monitor_geometry(monitorIndex);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const display = (global as any).display;
+    const monitorIndex = display.get_current_monitor();
+    const monitor = display.get_monitor_geometry(monitorIndex);
 
     // Full-stage overlay so clicks anywhere (including other monitors) dismiss it
     this._overlay = new St.Widget({
       style_class: `glight-overlay ${this._themeClass()}`,
-      layout_manager: new Clutter.FixedLayout(),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      layout_manager: new Clutter.FixedLayout() as any,
       reactive: true,
       can_focus: true,
       x: 0,
@@ -190,24 +246,33 @@ export class Launcher {
   private _populateResults(query: string): void {
     if (!this._resultsList) return;
     this._resultsList.destroy_all_children();
-    this._currentApps = [];
-    if (query.length === 0) return;
+    this._currentResults = [];
 
-    const apps = this._getFilteredApps(query, this._settings.maxResults);
-    this._currentApps = apps;
+    const q = query.toLowerCase().trim();
 
-    if (apps.length === 0 && query.length > 0) {
-      const empty = new St.Label({
+    const matchingActions = q.length === 0
+      ? []
+      : this._systemActions.filter(a => a.keywords.some(kw => kw.includes(q)));
+
+    const matchingApps = q.length > 0 ? this._getFilteredApps(q, this._settings.maxResults) : [];
+
+    if (q.length > 0 && matchingActions.length === 0 && matchingApps.length === 0) {
+      this._resultsList.add_child(new St.Label({
         style_class: 'glight-no-results',
         text: 'No results',
         x_align: Clutter.ActorAlign.CENTER,
         x_expand: true,
-      });
-      this._resultsList.add_child(empty);
+      }));
       return;
     }
 
-    for (const app of apps) {
+    for (const action of matchingActions) {
+      this._currentResults.push({ kind: 'action', action });
+      this._resultsList.add_child(this._createActionRow(action));
+    }
+
+    for (const app of matchingApps) {
+      this._currentResults.push({ kind: 'app', info: app });
       this._resultsList.add_child(this._createAppRow(app));
     }
   }
@@ -228,6 +293,49 @@ export class Launcher {
 
     results.sort((a, b) => a.get_name().localeCompare(b.get_name()));
     return results.slice(0, limit);
+  }
+
+  private _createActionRow(action: SystemAction): St.BoxLayout {
+    const row = new St.BoxLayout({
+      style_class: 'glight-result-row',
+      reactive: true,
+      can_focus: true,
+      x_expand: true,
+    });
+
+    row.add_child(new St.Icon({
+      style_class: 'glight-result-icon',
+      icon_name: action.iconName,
+      icon_size: 32,
+      y_align: Clutter.ActorAlign.CENTER,
+    }));
+
+    const labelBox = new St.BoxLayout({ vertical: true, y_align: Clutter.ActorAlign.CENTER, x_expand: true });
+    labelBox.add_child(new St.Label({ style_class: 'glight-result-name', text: action.name }));
+    row.add_child(labelBox);
+
+    const execute = () => { action.execute(); this.hide(); };
+
+    row.connect('button-press-event', () => { execute(); return Clutter.EVENT_STOP; });
+    row.connect('key-press-event', (_actor: Clutter.Actor, event: Clutter.Event) => {
+      const key = event.get_key_symbol();
+      if (key === Clutter.KEY_Return || key === Clutter.KEY_KP_Enter) { execute(); return Clutter.EVENT_STOP; }
+      if (key === Clutter.KEY_Escape) { this.hide(); return Clutter.EVENT_STOP; }
+      if (key === Clutter.KEY_Down) {
+        const next = row.get_next_sibling() as St.BoxLayout | null;
+        if (next) { next.grab_key_focus(); this._ensureVisible(next); }
+        return Clutter.EVENT_STOP;
+      }
+      if (key === Clutter.KEY_Up) {
+        const prev = row.get_previous_sibling() as St.BoxLayout | null;
+        if (prev) { prev.grab_key_focus(); this._ensureVisible(prev); }
+        else { this._searchEntry?.grab_key_focus(); }
+        return Clutter.EVENT_STOP;
+      }
+      return Clutter.EVENT_PROPAGATE;
+    });
+
+    return row;
   }
 
   private _createAppRow(appInfo: Gio.AppInfo): St.BoxLayout {
@@ -320,7 +428,8 @@ export class Launcher {
 
   private _ensureVisible(row: St.BoxLayout): void {
     if (!this._scrollView) return;
-    const adjustment = this._scrollView.vadjustment;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const adjustment = (this._scrollView as any).vadjustment;
     const [, rowY] = row.get_transformed_position();
     const [, scrollY] = this._scrollView.get_transformed_position();
     const relY = rowY - scrollY;
@@ -335,8 +444,14 @@ export class Launcher {
   }
 
   private _launchFirstResult(): void {
-    const app = this._currentApps[0];
-    if (app) this._launchApp(app);
+    const first = this._currentResults[0];
+    if (!first) return;
+    if (first.kind === 'action') {
+      first.action.execute();
+      this.hide();
+    } else {
+      this._launchApp(first.info);
+    }
   }
 
   private _launchApp(appInfo: Gio.AppInfo): void {

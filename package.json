@@ -5,7 +5,7 @@
   "license": "GPL-2.0-or-later",
   "type": "module",
   "scripts": {
-    "build": "node build.js",
+    "build": "tsc --noEmit && node build.js",
     "dev": "node build.js && make install",
     "clean": "rm -rf dist",
     "pack": "make pack",
@@ -25,6 +25,6 @@
     "@girs/st-14": "*",
     "esbuild": "^0.25.0",
     "sass": "^1.98.0",
-    "typescript": "^5.4.0"
+    "typescript": "^5.9.3"
   }
 }
