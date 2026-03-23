@@ -24,6 +24,7 @@ export class Launcher {
   private _isVisible = false;
   private _isAnimating = false;
   private _currentResults: ResultItem[] = [];
+  private _lastQuery = '';
 
   private readonly _systemActions: SystemAction[] = [
     {
@@ -84,6 +85,7 @@ export class Launcher {
 
   hide(): void {
     if (!this._isVisible || !this._overlay) return;
+    this._lastQuery = this._searchEntry?.clutter_text.get_text() ?? '';
     const overlay = this._overlay;
     this._isVisible = false;
     this._overlay = null;
@@ -212,8 +214,12 @@ export class Launcher {
       mode: Clutter.AnimationMode.EASE_OUT_QUAD,
     });
 
+    if (this._lastQuery) {
+      this._searchEntry.clutter_text.set_text(this._lastQuery);
+    }
+
     this._searchEntry.grab_key_focus();
-    this._populateResults('');
+    this._populateResults(this._lastQuery);
 
     // Live filter
     this._searchEntry.clutter_text.connect('text-changed', () => {
