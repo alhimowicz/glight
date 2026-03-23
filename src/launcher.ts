@@ -88,16 +88,9 @@ export class Launcher {
       opacity: 0,
     });
 
-    // Non-reactive monitor-sized widget so BinLayout centers the card on the right display.
-    // Non-reactive means clicks in this area (but outside the card) fall through to the overlay.
-    const monitorArea = new St.Widget({
-      layout_manager: new Clutter.BinLayout(),
-      reactive: false,
-      x: monitor.x,
-      y: monitor.y,
-      width: monitor.width,
-      height: monitor.height,
-    });
+    // Fixed position: horizontally centered on the monitor, 30% from the top.
+    // Using explicit coordinates on the FixedLayout overlay avoids BinLayout
+    // fighting with y_align and expand flags when the results list grows.
 
     // Dismiss on click outside the card
     this._overlay.connect('button-press-event', () => {
@@ -117,12 +110,13 @@ export class Launcher {
       }
     );
 
+    const cardWidth = 640; // matches $size-card-width CSS token
     const container = new St.BoxLayout({
       style_class: 'glight-container',
       vertical: true,
-      x_align: Clutter.ActorAlign.CENTER,
-      y_align: Clutter.ActorAlign.CENTER,
       reactive: true,
+      x: monitor.x + Math.round((monitor.width - cardWidth) / 2),
+      y: monitor.y + Math.round(monitor.height * 0.30),
     });
 
     container.connect('button-press-event', () => Clutter.EVENT_STOP);
@@ -137,7 +131,6 @@ export class Launcher {
     this._scrollView = new St.ScrollView({
       style_class: 'glight-results-scroll',
       x_expand: true,
-      y_expand: true,
       hscrollbar_policy: St.PolicyType.NEVER,
       vscrollbar_policy: St.PolicyType.AUTOMATIC,
     });
@@ -151,8 +144,7 @@ export class Launcher {
     this._scrollView.set_child(this._resultsList);
     container.add_child(this._searchEntry);
     container.add_child(this._scrollView);
-    monitorArea.add_child(container);
-    this._overlay.add_child(monitorArea);
+    this._overlay.add_child(container);
 
     Main.uiGroup.add_child(this._overlay);
 
