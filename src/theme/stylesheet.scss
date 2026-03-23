@@ -40,6 +40,11 @@
     color: map.get($t, 'text-secondary');
   }
 
+  .glight-result-tag {
+    background-color: map.get($t, 'tag-bg');
+    color:            map.get($t, 'tag-text');
+  }
+
   .glight-no-results {
     color: map.get($t, 'text-secondary');
   }
@@ -86,6 +91,12 @@
 
 .glight-result-description {
   font-size: $size-desc-font;
+}
+
+.glight-result-tag {
+  font-size:     $size-desc-font;
+  padding:       2px 8px;
+  border-radius: 4px;
 }
 
 .glight-no-results {

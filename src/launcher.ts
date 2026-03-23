@@ -342,6 +342,7 @@ export class Launcher {
     const labelBox = new St.BoxLayout({ vertical: true, y_align: Clutter.ActorAlign.CENTER, x_expand: true });
     labelBox.add_child(new St.Label({ style_class: 'glight-result-name', text: action.name }));
     row.add_child(labelBox);
+    row.add_child(this._createTag('System'));
 
     const execute = () => { action.execute(); this.hide(); };
 
@@ -408,6 +409,7 @@ export class Launcher {
 
     row.add_child(icon);
     row.add_child(labelBox);
+    row.add_child(this._createTag('Application'));
 
     const launch = () => this._launchApp(appInfo);
 
@@ -448,6 +450,14 @@ export class Launcher {
     });
 
     return row;
+  }
+
+  private _createTag(label: string): St.Label {
+    return new St.Label({
+      style_class: 'glight-result-tag',
+      text: label,
+      y_align: Clutter.ActorAlign.CENTER,
+    });
   }
 
   private _focusFirstResult(): void {

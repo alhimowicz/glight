@@ -95,6 +95,10 @@ $theme-light: (
   // Rows — alpha overlays match Adwaita list row behaviour
   'row-hover':               rgba(#000000, 0.07),
   'row-focus':               $light-3,
+
+  // Tags
+  'tag-bg':                  rgba(#000000, 0.06),
+  'tag-text':                $dark-1,
 );
 
 $theme-dark: (
@@ -118,6 +122,10 @@ $theme-dark: (
   // Rows — alpha overlays match Adwaita list row behaviour
   'row-hover':               rgba(#ffffff, 0.07),
   'row-focus':               $neutral-2,
+
+  // Tags
+  'tag-bg':                  rgba(#ffffff, 0.08),
+  'tag-text':                $light-5,
 );
 
 // ── Structural tokens (theme-independent) ──────────────────────────────────────
